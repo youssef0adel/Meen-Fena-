@@ -807,13 +807,16 @@ class CaseDatabase {
   ];
 }
 
-// Extension method to get cases in Arabic
-extension CaseLocalization on GameCase {
-  String getLocalizedTitle(String language) {
-    return language == 'ar' ? title : titleEn ?? title;
-  }
-  
-  String getLocalizedDescription(String language) {
-    return language == 'ar' ? description : descriptionEn ?? description;
-  }
+
+// استبدل الـ Extension بدوال عادية
+String getLocalizedTitle(GameCase gameCase, String language) {
+  return language == 'ar' 
+    ? gameCase.title 
+    : (gameCase.titleEn ?? gameCase.title);
+}
+
+String getLocalizedDescription(GameCase gameCase, String language) {
+  return language == 'ar' 
+    ? gameCase.description 
+    : (gameCase.descriptionEn ?? gameCase.description);
 }

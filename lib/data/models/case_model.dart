@@ -4,7 +4,9 @@ import 'evidence_model.dart';
 class GameCase {
   final String id;
   final String title;
+  final String? titleEn;        // ✅ أضفنا
   final String description;
+  final String? descriptionEn;  // ✅ أضفنا
   final String location;
   final String timeOfCrime;
   final String victimName;
@@ -17,7 +19,9 @@ class GameCase {
   const GameCase({
     required this.id,
     required this.title,
+    this.titleEn,              // ✅ اختياري
     required this.description,
+    this.descriptionEn,        // ✅ اختياري
     required this.location,
     required this.timeOfCrime,
     required this.victimName,
@@ -32,7 +36,9 @@ class GameCase {
     return GameCase(
       id: json['id'] as String,
       title: json['title'] as String,
+      titleEn: json['titleEn'] as String?,           // ✅
       description: json['description'] as String,
+      descriptionEn: json['descriptionEn'] as String?, // ✅
       location: json['location'] as String,
       timeOfCrime: json['timeOfCrime'] as String,
       victimName: json['victimName'] as String,
@@ -51,7 +57,9 @@ class GameCase {
   Map<String, dynamic> toJson() => {
     'id': id,
     'title': title,
+    'titleEn': titleEn,           // ✅
     'description': description,
+    'descriptionEn': descriptionEn, // ✅
     'location': location,
     'timeOfCrime': timeOfCrime,
     'victimName': victimName,
