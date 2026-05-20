@@ -35,17 +35,3 @@ class MeenFenaApp extends StatelessWidget {
     );
   }
 }
-
-// Add to app.dart routes:
-'/settings': (context) => const SettingsScreen(),
-'/lan-game': (context) => const LANGameScreen(),
-
-// Add settings button to main menu
-MenuButton(
-  icon: Icons.settings,
-  label: 'Settings',
-  description: 'Game options & rules',
-  onTap: () {
-    Navigator.pushNamed(context, '/settings');
-  },
-),

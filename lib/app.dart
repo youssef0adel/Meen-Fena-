@@ -7,25 +7,29 @@ import 'presentation/screens/role_reveal_screen.dart';
 import 'presentation/screens/game_screen.dart';
 import 'presentation/screens/voting_screen.dart';
 import 'presentation/screens/endgame_screen.dart';
+import 'presentation/screens/settings_screen.dart';
+import 'presentation/screens/lan_game_screen.dart';
 
 class AppRoot extends StatelessWidget {
   const AppRoot({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) { // ✅ غيرت الاسم لتجنب التعارض
     return MaterialApp(
       title: 'مين فينا؟',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkNoirTheme,
       initialRoute: '/splash',
       routes: {
-        '/splash': (context) => const SplashScreen(),
-        '/menu': (context) => const MainMenuScreen(),
-        '/player-setup': (context) => const PlayerSetupScreen(),
-        '/role-reveal': (context) => const RoleRevealScreen(),
-        '/game': (context) => const GameScreen(),
-        '/voting': (context) => const VotingScreen(),
-        '/endgame': (context) => const EndgameScreen(),
+        '/splash': (_) => const SplashScreen(),
+        '/menu': (_) => const MainMenuScreen(),
+        '/player-setup': (_) => const PlayerSetupScreen(),
+        '/role-reveal': (_) => const RoleRevealScreen(),
+        '/game': (_) => const GameScreen(),
+        '/voting': (_) => const VotingScreen(),
+        '/endgame': (_) => const EndgameScreen(),
+        '/settings': (_) => const SettingsScreen(),
+        '/lan-game': (_) => const LANGameScreen(),
       },
     );
   }

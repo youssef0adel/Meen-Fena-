@@ -61,6 +61,8 @@ class _MainMenuScreenState extends State<MainMenuScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Spacer(flex: 2),
+                
+                // العنوان الرئيسي
                 const Text(
                   'مين فينا؟',
                   style: TextStyle(
@@ -71,12 +73,16 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                   ),
                 ),
                 const SizedBox(height: 8),
+                
+                // خط فاصل
                 Container(
                   width: 60,
                   height: 2,
                   color: AppTheme.accentRed,
                 ),
                 const SizedBox(height: 20),
+                
+                // العنوان الإنجليزي
                 Text(
                   'WHO AMONG US?',
                   style: TextStyle(
@@ -85,34 +91,44 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                     letterSpacing: 6,
                   ),
                 ),
+                
                 const Spacer(flex: 2),
+                
+                // زر لعبة جديدة
                 MenuButton(
                   icon: Icons.people,
-                  label: 'New Game (Pass & Play)',
-                  description: 'Single device multiplayer',
+                  label: 'لعبة جديدة',
+                  description: 'تمرير الجهاز بين اللاعبين',
                   onTap: () {
                     Navigator.pushNamed(context, '/player-setup');
                   },
                 ),
                 const SizedBox(height: 16),
+                
+                // زر LAN Multiplayer
                 MenuButton(
                   icon: Icons.wifi,
-                  label: 'LAN Multiplayer',
-                  description: 'Multiple devices',
+                  label: 'شبكة محلية',
+                  description: 'لعب جماعي عبر أجهزة متعددة',
                   onTap: () {
-                    // Navigate to multiplayer setup
+                    Navigator.pushNamed(context, '/lan-game');
                   },
                 ),
                 const SizedBox(height: 16),
+                
+                // زر الإعدادات
                 MenuButton(
                   icon: Icons.settings,
-                  label: 'Settings',
-                  description: 'Game options & rules',
+                  label: 'الإعدادات',
+                  description: 'خيارات اللعبة والقواعد',
                   onTap: () {
-                    // Navigate to settings
+                    Navigator.pushNamed(context, '/settings');
                   },
                 ),
+                
                 const Spacer(flex: 3),
+                
+                // رقم الإصدار
                 Text(
                   'v1.0.0',
                   style: TextStyle(

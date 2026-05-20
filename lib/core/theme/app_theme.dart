@@ -23,7 +23,8 @@ class AppTheme {
       surface: cardDark,
       error: mafiaRed,
     ),
-    cardTheme: CardTheme(
+    // ✅ استخدم CardThemeData بدل CardTheme
+    cardTheme: CardThemeData(
       color: cardDark,
       elevation: 8,
       shadowColor: Colors.black54,
@@ -33,40 +34,18 @@ class AppTheme {
       ),
     ),
     textTheme: const TextTheme(
-      headlineLarge: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: textPrimary,
-        letterSpacing: 2,
-      ),
-      headlineMedium: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
-      ),
-      bodyLarge: TextStyle(
-        fontSize: 16,
-        color: textPrimary,
-        height: 1.5,
-      ),
-      bodyMedium: TextStyle(
-        fontSize: 14,
-        color: textSecondary,
-      ),
+      headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: textPrimary, letterSpacing: 2),
+      headlineMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: textPrimary),
+      bodyLarge: TextStyle(fontSize: 16, color: textPrimary, height: 1.5),
+      bodyMedium: TextStyle(fontSize: 14, color: textSecondary),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: accentRed,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        textStyle: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1),
       ),
     ),
   );
