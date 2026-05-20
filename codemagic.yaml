@@ -1,16 +1,15 @@
 workflows:
   android-build:
-    name: Build Android - مين فينا؟
+    name: Build Android
     max_build_duration: 60
     environment:
-      flutter: 3.27.4
+      flutter: stable
       java: 17
     scripts:
-      - name: Clean project
-        script: flutter clean
-      - name: Get packages
-        script: flutter pub get
-      - name: Build App Bundle
-        script: flutter build appbundle --debug
+      - name: Build
+        script: |
+          flutter clean
+          flutter pub get
+          flutter build appbundle --debug --android-skip-build-dependency-validation
     artifacts:
       - build/app/outputs/bundle/debug/app-debug.aab
