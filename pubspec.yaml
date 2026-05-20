@@ -9,55 +9,37 @@ dependencies:
   flutter:
     sdk: flutter
     
-  # إدارة الحالة
-  provider: ^6.1.2
+  # Core
+  provider: ^6.1.1
+  shared_preferences: ^2.2.2
   
-  # التخزين المحلي
-  shared_preferences: ^2.2.3
-  
-  # الرسوم المتحركة
+  # UI & Animation
   flutter_animate: ^4.5.0
+  flutter_svg: ^2.0.9
   
-  # الخطوط
-  google_fonts: ^6.2.0
-  
-  # الصور المتجهة
-  flutter_svg: ^2.0.10+1
-  
-  # معرفات فريدة
-  uuid: ^4.4.0
-  
-  # أدوات تجميع
+  # Utilities
+  uuid: ^4.2.1
   collection: ^1.18.0
   
-  # الشبكة (لـ LAN Multiplayer)
-  web_socket_channel: ^2.4.5
+  # Network
+  web_socket_channel: ^2.4.0
   
-  # الصوت
+  # Audio (اختياري - ممكن تشيله لو بيعمل مشاكل)
   audioplayers: ^5.2.1
   
-  # التوطين
+  # Localization - بدون تحديد إصدار intl يدوياً
   flutter_localizations:
     sdk: flutter
-  intl: ^0.19.0
+  # intl مش محتاج تحدده - هيتحمل تلقائي من flutter_localizations
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-    
-  # تحليل الكود
-  flutter_lints: ^3.0.2
-  
-  # أيقونات التطبيق
+  flutter_lints: ^3.0.1
   flutter_launcher_icons: ^0.13.1
-  
-  # تغيير اسم الحزمة
-  change_app_package_name: ^1.1.0
 
 flutter:
   uses-material-design: true
-  
-  # دعم العربية
   generate: true
   
   assets:
@@ -88,7 +70,6 @@ flutter:
         - asset: assets/fonts/Amiri-Bold.ttf
           weight: 700
 
-# إعدادات أيقونة التطبيق
 flutter_launcher_icons:
   android: true
   ios: true
