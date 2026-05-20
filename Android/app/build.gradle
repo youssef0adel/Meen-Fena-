@@ -4,27 +4,9 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0.0'
-}
-
 android {
     namespace "com.meenfena.game"
-    compileSdk 35
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -43,31 +25,24 @@ android {
     defaultConfig {
         applicationId "com.meenfena.game"
         minSdk 21
-        targetSdk 35
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
         multiDexEnabled true
-        
-        resValue "string", "app_name", "مين فينا؟"
     }
 
     buildTypes {
         debug {
             debuggable true
-            minifyEnabled false
-            shrinkResources false
         }
-        
         release {
             minifyEnabled true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     lint {
         disable 'InvalidPackage'
-        checkReleaseBuilds false
         abortOnError false
     }
 }
@@ -77,8 +52,7 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.multidex:multidex:2.0.1'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 }

@@ -1,5 +1,5 @@
 name: meen_fena
-description: "مين فينا؟ (Who Among Us?) - لعبة استنتاج اجتماعي مصرية"
+description: "مين فينا؟ - لعبة استنتاج اجتماعي مصرية"
 version: 1.0.0+1
 publish_to: none
 
@@ -23,7 +23,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
 
 flutter:
   uses-material-design: true

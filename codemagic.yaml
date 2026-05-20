@@ -3,12 +3,16 @@ workflows:
     name: Build Android - مين فينا؟
     max_build_duration: 30
     environment:
-      flutter: 3.22.0
+      flutter: 3.22.3
       java: 17
+      android_signing:
+        - debug_keystore
     scripts:
-      - name: Get Flutter packages
+      - name: Clean
+        script: flutter clean
+      - name: Get packages
         script: flutter pub get
       - name: Build APK
-        script: flutter build apk --release
+        script: flutter build apk --debug --android-skip-build-dependency-validation
     artifacts:
-      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/flutter-apk/app-debug.apk
