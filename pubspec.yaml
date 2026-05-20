@@ -75,4 +75,5 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/images/logo/logo_splash.png"
   adaptive_icon_background: "#1A1A1A"
-  adaptive_icon_foreground: "assets/images/logo/logo_foreground.png"
+  adaptive_icon_foreground: "assets/images/logo/logo_foreground.png"    
+  
