@@ -6,6 +6,11 @@ workflows:
       flutter: stable
       java: 17
     scripts:
+      - name: Create assets folders
+        script: |
+          mkdir -p assets/images
+          mkdir -p assets/data
+          mkdir -p assets/fonts
       - name: Build
         script: |
           flutter clean
