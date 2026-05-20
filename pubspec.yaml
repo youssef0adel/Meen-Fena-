@@ -1,5 +1,5 @@
 name: meen_fena
-description: "مين فينا؟ (Who Among Us?) - A social deduction mystery game"
+description: "مين فينا؟ (Who Among Us?) - لعبة استنتاج اجتماعي مصرية"
 version: 1.0.0+1
 
 environment:
@@ -8,25 +8,70 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.1.1
-  shared_preferences: ^2.2.2
+    
+  # إدارة الحالة
+  provider: ^6.1.2
+  
+  # التخزين المحلي
+  shared_preferences: ^2.2.3
+  
+  # الرسوم المتحركة
   flutter_animate: ^4.5.0
-  google_fonts: ^6.1.0
-  flutter_svg: ^2.0.9
-  uuid: ^4.2.1
+  
+  # الخطوط
+  google_fonts: ^6.2.0
+  
+  # الصور المتجهة
+  flutter_svg: ^2.0.10+1
+  
+  # معرفات فريدة
+  uuid: ^4.4.0
+  
+  # أدوات تجميع
   collection: ^1.18.0
+  
+  # الشبكة (لـ LAN Multiplayer)
+  web_socket_channel: ^2.4.5
+  
+  # الصوت
+  audioplayers: ^5.2.1
+  
+  # التوطين
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+    
+  # تحليل الكود
+  flutter_lints: ^3.0.2
+  
+  # أيقونات التطبيق
+  flutter_launcher_icons: ^0.13.1
+  
+  # تغيير اسم الحزمة
+  change_app_package_name: ^1.1.0
 
 flutter:
   uses-material-design: true
   
+  # دعم العربية
+  generate: true
+  
   assets:
     - assets/images/
-    - assets/cases/
+    - assets/images/logo/
+    - assets/images/backgrounds/
+    - assets/images/characters/
+    - assets/images/evidence/
+    - assets/images/icons/
+    - assets/images/egyptian/
+    - assets/sounds/sfx/
+    - assets/sounds/music/
+    - assets/data/cases/
+    - assets/data/config/
     
   fonts:
     - family: Cairo
@@ -34,3 +79,19 @@ flutter:
         - asset: assets/fonts/Cairo-Regular.ttf
         - asset: assets/fonts/Cairo-Bold.ttf
           weight: 700
+        - asset: assets/fonts/Cairo-Medium.ttf
+          weight: 500
+          
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+          weight: 700
+
+# إعدادات أيقونة التطبيق
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo/logo_splash.png"
+  adaptive_icon_background: "#1A1A1A"
+  adaptive_icon_foreground: "assets/images/logo/logo_foreground.png"

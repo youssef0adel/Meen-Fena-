@@ -34,13 +34,13 @@ android {
     ndkVersion flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
         coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     sourceSets {
@@ -55,11 +55,9 @@ android {
         versionName flutterVersionName
         multiDexEnabled true
         
-        // إعدادات للعبة
         resValue "string", "app_name", "مين فينا؟"
         resValue "string", "game_name_en", "Who Among Us?"
         
-        // تحسينات الأداء
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
         }
@@ -73,10 +71,12 @@ android {
             keyPassword 'android'
         }
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+                storePassword keystoreProperties['storePassword']
+            }
         }
     }
 
@@ -106,25 +106,14 @@ android {
                 debugSymbolLevel 'FULL'
             }
         }
-        
-        // وضع الإصدار الداخلي للاختبار
-        staging {
-            initWith debug
-            applicationIdSuffix ".staging"
-            versionNameSuffix "-staging"
-            
-            buildConfigField "String", "SERVER_URL", '"https://staging.meenfena.com"'
-        }
     }
 
-    // تحسين البناء
     lint {
         disable 'InvalidPackage'
         checkReleaseBuilds false
         abortOnError false
     }
 
-    // إعدادات الحزم
     packagingOptions {
         resources {
             excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt']
@@ -134,7 +123,6 @@ android {
         }
     }
 
-    // دعم الشاشات المختلفة
     splits {
         abi {
             enable true
@@ -153,13 +141,13 @@ dependencies {
     // Core Android
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
-    implementation 'androidx.activity:activity-compose:1.8.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+    implementation 'androidx.activity:activity-compose:1.8.2'
     
     // Multidex
     implementation 'androidx.multidex:multidex:2.0.1'
     
-    // Desugaring للتوافق مع Java 8
+    // Desugaring للتوافق مع Java 8+
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
     
     // Networking (لطور الـ Multiplayer)
@@ -178,30 +166,10 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     
     // Animation
-    implementation 'com.airbnb.android:lottie:6.1.0'
-    
-    // Firebase (اختياري - للتوسع المستقبلي)
-    // implementation platform('com.google.firebase:firebase-bom:32.7.0')
-    // implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.airbnb.android:lottie:6.3.0'
     
     // Testing
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-}
-
-// تحسينات Gradle
-gradle.projectsEvaluated {
-    tasks.withType(JavaCompile) {
-        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-    }
-}
-
-// مهمة لإنشاء APK محسن
-task optimizeApk {
-    doLast {
-        println '🎮 تحسين APK للعبة مين فينا؟'
-        println '📱 Application ID: com.meenfena.game'
-        println '📊 Version: ' + flutterVersionName
-    }
 }
