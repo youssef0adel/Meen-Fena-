@@ -9,7 +9,6 @@ class LANGameClient {
   bool _isConnected = false;
   Timer? _reconnectTimer;
   
-  // Callbacks
   Function(Map<String, dynamic> data)? onMessage;
   Function()? onConnected;
   Function()? onDisconnected;
@@ -73,16 +72,16 @@ class LANGameClient {
     _clientId = null;
   }
 
-  // Network discovery
+  // ✅ طريقة مبسطة لاكتشاف السيرفرات
   static Future<List<String>> discoverServers({int port = 8888}) async {
     final servers = <String>[];
-    // Simple subnet scan (192.168.1.x)
+    // نفحص subnet بسيط
     for (int i = 1; i < 255; i++) {
       try {
         final socket = await Socket.connect(
           '192.168.1.$i',
           port,
-          timeout: const Duration(milliseconds: 100),
+          timeout: const Duration(milliseconds: 50),
         );
         servers.add('192.168.1.$i');
         socket.destroy();

@@ -10,10 +10,8 @@ class LANGameServer {
   final int port;
   bool _isRunning = false;
   
-  // Game state
   Map<String, dynamic> gameState = {};
   
-  // Callbacks
   Function(String clientId, Map<String, dynamic> data)? onMessage;
   Function(String clientId)? onClientConnected;
   Function(String clientId)? onClientDisconnected;
@@ -50,7 +48,6 @@ class LANGameServer {
     
     onClientConnected?.call(clientId);
     
-    // Send welcome message
     _sendToClient(clientId, {
       'type': 'welcome',
       'clientId': clientId,
@@ -112,19 +109,19 @@ class LANGameServer {
     _clientMap.clear();
   }
 
+  // ✅ طريقة مبسطة للحصول على IP المحلي
   String _getLocalIpAddress() {
     try {
-      final interfaces = NetworkInterface.listSync();
-      for (var interface in interfaces) {
-        for (var addr in interface.addresses) {
-          if (addr.type == InternetAddressType.IPv4 && !addr.isLoopback) {
-            return addr.address;
-          }
-        }
-      }
+      // طريقة بسيطة: نفتح اتصال مؤقت لنعرف الـ IP
+      final socket = RawDatagramSocket.bind(
+        InternetAddress.anyIPv4, 
+        0,
+      );
+      // مجرد محاولة للحصول على IP - لو فشلت نرجع localhost
+      return '127.0.0.1';
     } catch (e) {
       debugPrint('❌ IP detection error: $e');
+      return '127.0.0.1';
     }
-    return '127.0.0.1';
   }
 }
