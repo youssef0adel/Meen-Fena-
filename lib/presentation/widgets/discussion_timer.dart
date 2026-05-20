@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 
 class DiscussionTimer extends StatefulWidget {
-  final int duration; // in seconds
+  final int duration;
 
   const DiscussionTimer({super.key, required this.duration});
 
@@ -64,7 +64,7 @@ class _DiscussionTimerState extends State<DiscussionTimer>
       child: Column(
         children: [
           Text(
-            'DISCUSSION TIME',
+            'وقت المناقشة',
             style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 12,
@@ -72,39 +72,34 @@ class _DiscussionTimerState extends State<DiscussionTimer>
             ),
           ),
           const SizedBox(height: 10),
-          AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              return SizedBox(
-                width: 120,
-                height: 120,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CircularProgressIndicator(
-                      value: _animation.value,
-                      backgroundColor: AppTheme.secondaryDark,
+          SizedBox(
+            width: 100,
+            height: 100,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                CircularProgressIndicator(
+                  value: _animation.value,
+                  backgroundColor: AppTheme.secondaryDark,
+                  color: _isWarning
+                      ? AppTheme.accentRed
+                      : AppTheme.goldAccent,
+                  strokeWidth: 6,
+                ),
+                Center(
+                  child: Text(
+                    _formatTime(_remainingSeconds),
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
                       color: _isWarning
                           ? AppTheme.accentRed
-                          : AppTheme.goldAccent,
-                      strokeWidth: 8,
+                          : AppTheme.textPrimary,
                     ),
-                    Center(
-                      child: Text(
-                        _formatTime(_remainingSeconds),
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: _isWarning
-                              ? AppTheme.accentRed
-                              : AppTheme.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ],
       ),
