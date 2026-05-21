@@ -67,6 +67,7 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
       });
       _controller.reset();
     } else {
+      // ✅ انتقال مباشر بدون تأخير
       Navigator.pushReplacementNamed(context, '/game');
     }
   }

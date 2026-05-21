@@ -10,6 +10,9 @@ import 'presentation/screens/endgame_screen.dart';
 import 'presentation/screens/settings_screen.dart';
 import 'presentation/screens/lan_game_screen.dart';
 
+// تأكد من وجود كل المسارات:
+
+
 class AppRoot extends StatelessWidget {
   const AppRoot({super.key});
 

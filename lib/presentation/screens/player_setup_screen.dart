@@ -15,7 +15,6 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
   int _playerCount = 4;
   final List<TextEditingController> _nameControllers = [];
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -29,7 +28,7 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
     }
     _nameControllers.clear();
     for (int i = 0; i < _playerCount; i++) {
-      _nameControllers.add(TextEditingController());
+      _nameControllers.add(TextEditingController(text: 'لاعب ${i + 1}'));
     }
   }
 
@@ -41,26 +40,33 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
     super.dispose();
   }
 
+  // ✅ إصلاح دالة البدء
   void _startGame() {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      
       final playerNames = _nameControllers
           .map((controller) => controller.text.trim())
           .toList();
 
+      // ✅ تحقق من الأسماء
+      if (playerNames.any((name) => name.isEmpty)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('من فضلك أدخل جميع أسماء اللاعبين'),
+            backgroundColor: AppTheme.bloodRed,
+          ),
+        );
+        return;
+      }
+
       final gameProvider = context.read<GameProvider>();
+      
+      // ✅ تهيئة اللعبة
       gameProvider.initializeGame(playerNames);
       gameProvider.selectCase();
       gameProvider.assignRoles();
 
-      // ✅ تأخير بسيط ثم الانتقال
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          setState(() => _isLoading = false);
-          Navigator.pushNamed(context, '/role-reveal');
-        }
-      });
+      // ✅ الانتقال مباشرة بدون تأخير طويل
+      Navigator.pushNamed(context, '/role-reveal');
     }
   }
 
@@ -90,7 +96,6 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              // عدد اللاعبين
               Text(
                 'اختر عدد اللاعبين',
                 style: TextStyle(
@@ -114,7 +119,6 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              // قائمة اللاعبين
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -127,14 +131,13 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
                   },
                 ),
               ),
-              // زر البدء
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : _startGame,
+                    onPressed: _startGame,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.bloodRed,
                       foregroundColor: AppTheme.goldAccent,
@@ -147,16 +150,7 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
                         letterSpacing: 2,
                       ),
                     ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: AppTheme.goldAccent,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text('🔍 ابدأ اللعبة'),
+                    child: const Text('🔍 ابدأ اللعبة'),
                   ),
                 ),
               ),

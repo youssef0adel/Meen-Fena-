@@ -119,15 +119,18 @@ class GameEngine {
     return null;
   }
 
-  GameResult? checkWinCondition() {
+GameResult? checkWinCondition() {
     final alivePlayers = players.where((p) => p.isAlive).toList();
     final aliveMafia = alivePlayers.where((p) => p.isMafia).toList();
     final aliveInnocents = alivePlayers.where((p) => !p.isMafia).toList();
+    
     if (aliveMafia.isEmpty) return GameResult.innocentsWin;
     if (aliveMafia.length >= aliveInnocents.length) return GameResult.mafiaWin;
     if (alivePlayers.length <= 2) return GameResult.juryPhase;
-    return null;
+    
+    return null; // ✅ اللعبة مستمرة
   }
 }
 
 enum GameResult { innocentsWin, mafiaWin, juryPhase }
+

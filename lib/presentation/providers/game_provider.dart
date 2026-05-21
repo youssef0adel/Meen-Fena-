@@ -26,7 +26,6 @@ class GameProvider extends ChangeNotifier {
   Player? _currentPlayer;
   Map<String, String> _votes = {};
   
-  // ✅ تأثيرات الشك
   double _suspicionLevel = 0.0;
   bool _isPhaseTransitioning = false;
   String _lastAction = '';
@@ -52,106 +51,85 @@ class GameProvider extends ChangeNotifier {
   List<Player> get eliminatedPlayers => 
       _players.where((p) => p.isEliminated).toList();
 
+  // ✅ تهيئة اللعبة - فوري بدون تأخير
   void initializeGame(List<String> playerNames) {
     _gameEngine = GameEngine.initialize(playerNames);
     _players = _gameEngine!.players;
     _currentPhase = GamePhase.setup;
     _suspicionLevel = 0.0;
     _suspicionLog = [];
-    _addToLog('🕵️ تم بدء لعبة جديدة مع ${playerNames.length} لاعبين');
+    _lastAction = '🕵️ تم بدء لعبة جديدة مع ${playerNames.length} لاعبين';
     notifyListeners();
   }
 
+  // ✅ اختيار قضية - فوري
   void selectCase() {
     if (_gameEngine == null) return;
     _currentCase = _gameEngine!.selectCase();
     _currentPhase = GamePhase.caseSelection;
-    _addToLog('📋 تم اختيار قضية: ${_currentCase?.title ?? ""}');
-    _increaseSuspicion(0.1);
+    _lastAction = '📋 تم اختيار قضية: ${_currentCase?.title ?? ""}';
     notifyListeners();
   }
 
+  // ✅ توزيع الأدوار - فوري
   void assignRoles() {
     if (_gameEngine == null) return;
     _players = _gameEngine!.assignRoles();
     _currentPhase = GamePhase.roleDistribution;
-    _addToLog('🎭 تم توزيع الشخصيات... من هو المافيا؟');
-    _increaseSuspicion(0.2);
+    _lastAction = '🎭 تم توزيع الأدوار...';
     notifyListeners();
   }
 
+  // ✅ بدء مرحلة الأدلة - فوري
   void startEvidencePhase() {
-    _setPhaseTransition(true);
     _currentPhase = GamePhase.evidencePhase;
     _currentEvidence = _gameEngine!.getCurrentEvidence();
-    _addToLog('🔍 ظهور دليل جديد...');
-    _increaseSuspicion(0.15);
-    
-    Future.delayed(const Duration(milliseconds: 600), () {
-      _setPhaseTransition(false);
-      notifyListeners();
-    });
+    _lastAction = '🔍 ظهور دليل جديد...';
+    _suspicionLevel = 0.3;
     notifyListeners();
   }
 
+  // ✅ الدليل التالي - فوري
   void nextEvidence() {
     if (_gameEngine == null) return;
-    _setPhaseTransition(true);
     
     if (_gameEngine!.nextEvidence()) {
       _currentEvidence = _gameEngine!.getCurrentEvidence();
-      _addToLog('🃏 دليل إضافي يظهر...');
-      _increaseSuspicion(0.1);
+      _lastAction = '🃏 دليل إضافي يظهر...';
+      _suspicionLevel += 0.1;
     } else {
       _currentPhase = GamePhase.discussion;
-      _addToLog('💬 بدء مرحلة الاتهامات والشك');
+      _lastAction = '💬 بدء مرحلة المناقشة';
       _suspicionLevel = 0.7;
     }
-    
-    Future.delayed(const Duration(milliseconds: 500), () {
-      _setPhaseTransition(false);
-      notifyListeners();
-    });
     notifyListeners();
   }
 
+  // ✅ بدء المناقشة - فوري
   void startDiscussion() {
-    _setPhaseTransition(true);
     _currentPhase = GamePhase.discussion;
-    _addToLog('🗣️ تناقشوا... لكن احذروا الكاذبين');
+    _lastAction = '🗣️ تناقشوا... لكن احذروا الكاذبين';
     _suspicionLevel = 0.6;
-    
-    Future.delayed(const Duration(milliseconds: 400), () {
-      _setPhaseTransition(false);
-      notifyListeners();
-    });
     notifyListeners();
   }
 
+  // ✅ بدء التصويت - فوري
   void startVoting() {
-    _setPhaseTransition(true);
     _currentPhase = GamePhase.voting;
     _votes = {};
-    _addToLog('🗳️ وقت التصويت... اختاروا بحكمة');
+    _lastAction = '🗳️ وقت التصويت... اختاروا بحكمة';
     _suspicionLevel = 0.85;
-    
-    Future.delayed(const Duration(milliseconds: 400), () {
-      _setPhaseTransition(false);
-      notifyListeners();
-    });
     notifyListeners();
   }
 
   void castVote(String voterId, String targetId) {
     _votes[voterId] = targetId;
-    _addToLog('👈 تم الإدلاء بصوت');
-    _increaseSuspicion(0.05);
+    _lastAction = '👈 تم الإدلاء بصوت';
     notifyListeners();
   }
 
   void processElimination() {
     if (_gameEngine == null) return;
-    _setPhaseTransition(true);
     _suspicionLevel = 1.0;
     
     final eliminatedPlayer = _gameEngine!.processVotes(_votes);
@@ -159,7 +137,7 @@ class GameProvider extends ChangeNotifier {
       final index = _players.indexWhere((p) => p.id == eliminatedPlayer.id);
       if (index != -1) {
         _players[index] = eliminatedPlayer;
-        _addToLog('💀 تم إقصاء ${eliminatedPlayer.name}!');
+        _lastAction = '💀 تم إقصاء ${eliminatedPlayer.name}!';
       }
     }
 
@@ -173,11 +151,6 @@ class GameProvider extends ChangeNotifier {
       _currentEvidence = _gameEngine!.getCurrentEvidence();
       _suspicionLevel = 0.3;
     }
-    
-    Future.delayed(const Duration(milliseconds: 800), () {
-      _setPhaseTransition(false);
-      notifyListeners();
-    });
     notifyListeners();
   }
 
@@ -185,35 +158,18 @@ class GameProvider extends ChangeNotifier {
     switch (result) {
       case GameResult.innocentsWin:
         _currentPhase = GamePhase.endgame;
-        _addToLog('🎉 الأبرياء انتصروا! تم القبض على كل المافيا');
+        _lastAction = '🎉 الأبرياء انتصروا!';
         break;
       case GameResult.mafiaWin:
         _currentPhase = GamePhase.endgame;
-        _addToLog('💀 المافيا انتصرت... سقط الأبرياء');
+        _lastAction = '💀 المافيا انتصرت...';
         break;
       case GameResult.juryPhase:
         _currentPhase = GamePhase.juryDeliberation;
-        _addToLog('⚖️ هيئة المحلفين تجتمع للقرار النهائي');
+        _lastAction = '⚖️ هيئة المحلفين تجتمع';
         break;
     }
     notifyListeners();
-  }
-
-  void _increaseSuspicion(double amount) {
-    _suspicionLevel = (_suspicionLevel + amount).clamp(0.0, 1.0);
-  }
-
-  void _setPhaseTransition(bool value) {
-    _isPhaseTransitioning = value;
-    notifyListeners();
-  }
-
-  void _addToLog(String message) {
-    _lastAction = message;
-    _suspicionLog.insert(0, message);
-    if (_suspicionLog.length > 20) {
-      _suspicionLog.removeLast();
-    }
   }
 
   void resetGame() {
