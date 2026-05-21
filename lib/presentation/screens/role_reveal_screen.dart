@@ -74,7 +74,7 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
   @override
   Widget build(BuildContext context) {
     final gameProvider = context.watch<GameProvider>();
-    final currentPlayer = gameProvider.players[_currentPlayerIndex];
+    final currentPlayer = gameProvider.players[_currentPlayerIndex]; // ✅ تعريف currentPlayer
     final character = gameProvider.currentCase?.suspects.firstWhere(
       (c) => c.id == currentPlayer.characterId,
     );

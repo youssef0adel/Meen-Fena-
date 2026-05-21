@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../providers/game_provider.dart';
-import '../../game/engine/game_engine.dart';
+// ✅ شيل import game_engine.dart - استخدم GamePhase من provider فقط
 import '../widgets/evidence_card.dart';
 import '../widgets/discussion_timer.dart';
 import '../widgets/alive_players_grid.dart';
+import '../../data/models/player_model.dart'; // ✅ استيراد Player
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -98,16 +99,18 @@ class _GameScreenState extends State<GameScreen>
     );
   }
 
+  // ✅ استخدم if بدل switch لتجنب مشاكل const
   Widget _buildPhaseContent(GameProvider gameProvider) {
-    switch (gameProvider.currentPhase) {
-      case GamePhase.evidencePhase:
-        return _buildEvidencePhase(gameProvider);
-      case GamePhase.discussion:
-        return _buildDiscussionPhase(gameProvider);
-      case GamePhase.voting:
-        return _buildVotingPhase(gameProvider);
-      default:
-        return const Center(child: CircularProgressIndicator());
+    final phase = gameProvider.currentPhase;
+    
+    if (phase == GamePhase.evidencePhase) {
+      return _buildEvidencePhase(gameProvider);
+    } else if (phase == GamePhase.discussion) {
+      return _buildDiscussionPhase(gameProvider);
+    } else if (phase == GamePhase.voting) {
+      return _buildVotingPhase(gameProvider);
+    } else {
+      return const Center(child: CircularProgressIndicator());
     }
   }
 
@@ -322,6 +325,7 @@ class _GameScreenState extends State<GameScreen>
     );
   }
 
+  // ✅ استخدم Player من data/models
   Widget _buildVoteCard(Player player) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
