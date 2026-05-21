@@ -74,7 +74,9 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
   @override
   Widget build(BuildContext context) {
     final gameProvider = context.watch<GameProvider>();
-    final currentPlayer = gameProvider.players[_currentPlayerIndex]; // ✅ تعريف currentPlayer
+    
+    // ✅ تعريف currentPlayer هنا
+    final currentPlayer = gameProvider.players[_currentPlayerIndex];
     final character = gameProvider.currentCase?.suspects.firstWhere(
       (c) => c.id == currentPlayer.characterId,
     );
@@ -126,19 +128,16 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
               const SizedBox(height: 30),
               
               if (!_roleRevealed)
-                // رسالة التمرير
-                _buildPassDeviceMessage(),
+                _buildPassDeviceMessage(currentPlayer),
               
               if (_roleRevealed)
-                // كارت الشخصية
                 _buildCharacterCard(character, currentPlayer),
               
               const Spacer(),
               
-              // زر الكشف أو التالي
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: _buildActionButton(),
+                child: _buildActionButton(gameProvider),
               ),
               const SizedBox(height: 20),
             ],
@@ -148,7 +147,7 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
     );
   }
 
-  Widget _buildPassDeviceMessage() {
+  Widget _buildPassDeviceMessage(currentPlayer) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 30),
       padding: const EdgeInsets.all(24),
@@ -165,7 +164,6 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
       ),
       child: Column(
         children: [
-          // أيقونة متحركة
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 0.0, end: 2 * 3.14159),
             duration: const Duration(seconds: 3),
@@ -259,7 +257,6 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
               ),
               child: Column(
                 children: [
-                  // صورة الشخصية
                   Container(
                     width: 80,
                     height: 80,
@@ -291,8 +288,6 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
-                  // اسم الشخصية
                   Text(
                     character?.name ?? '',
                     style: const TextStyle(
@@ -310,8 +305,6 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
                     ),
                   ),
                   const SizedBox(height: 12),
-                  
-                  // خلفية الشخصية
                   Text(
                     character?.background ?? '',
                     textAlign: TextAlign.center,
@@ -322,8 +315,6 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
                     ),
                   ),
                   const SizedBox(height: 20),
-                  
-                  // بطاقة الدور
                   _buildRoleBadge(currentPlayer),
                 ],
               ),
@@ -385,7 +376,7 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildActionButton(GameProvider gameProvider) {
     if (!_roleRevealed) {
       return ElevatedButton.icon(
         onPressed: _revealRole,
@@ -409,12 +400,12 @@ class _RoleRevealScreenState extends State<RoleRevealScreen>
       return ElevatedButton.icon(
         onPressed: _nextPlayer,
         icon: Icon(
-          _currentPlayerIndex < context.read<GameProvider>().players.length - 1
+          _currentPlayerIndex < gameProvider.players.length - 1
               ? Icons.arrow_forward
               : Icons.play_arrow,
         ),
         label: Text(
-          _currentPlayerIndex < context.read<GameProvider>().players.length - 1
+          _currentPlayerIndex < gameProvider.players.length - 1
               ? 'اللاعب التالي'
               : 'ابدأ اللعبة',
         ),
