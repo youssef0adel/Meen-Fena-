@@ -36,9 +36,7 @@ class _MenuButtonState extends State<MenuButton> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.all(18),
-          transform: _isPressed
-              ? Matrix4.identity()..scale(0.97)
-              : Matrix4.identity(),
+          transform: _getTransform(),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -118,5 +116,13 @@ class _MenuButtonState extends State<MenuButton> {
         ),
       ),
     );
+  }
+
+  // ✅ دالة منفصلة للتحويل
+  Matrix4 _getTransform() {
+    if (_isPressed) {
+      return Matrix4.identity()..scale(0.97);
+    }
+    return Matrix4.identity();
   }
 }

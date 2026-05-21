@@ -14,22 +14,50 @@ class AppRoot extends StatelessWidget {
   const AppRoot({super.key});
 
   @override
-  Widget build(BuildContext ctx) { // ✅ غيرت الاسم لتجنب التعارض
+  Widget build(BuildContext ctx) {
     return MaterialApp(
       title: 'مين فينا؟',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkNoirTheme,
       initialRoute: '/splash',
-      routes: {
-        '/splash': (_) => const SplashScreen(),
-        '/menu': (_) => const MainMenuScreen(),
-        '/player-setup': (_) => const PlayerSetupScreen(),
-        '/role-reveal': (_) => const RoleRevealScreen(),
-        '/game': (_) => const GameScreen(),
-        '/voting': (_) => const VotingScreen(),
-        '/endgame': (_) => const EndgameScreen(),
-        '/settings': (_) => const SettingsScreen(),
-        '/lan-game': (_) => const LANGameScreen(),
+      // ✅ إضافة أنيميشن للانتقال بين الصفحات
+      onGenerateRoute: (settings) {
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            switch (settings.name) {
+              case '/splash':
+                return const SplashScreen();
+              case '/menu':
+                return const MainMenuScreen();
+              case '/player-setup':
+                return const PlayerSetupScreen();
+              case '/role-reveal':
+                return const RoleRevealScreen();
+              case '/game':
+                return const GameScreen();
+              case '/voting':
+                return const VotingScreen();
+              case '/endgame':
+                return const EndgameScreen();
+              case '/settings':
+                return const SettingsScreen();
+              case '/lan-game':
+                return const LANGameScreen();
+              default:
+                return const MainMenuScreen();
+            }
+          },
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
+                child: child,
+              ),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 500),
+        );
       },
     );
   }
