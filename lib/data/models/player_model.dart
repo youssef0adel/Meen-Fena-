@@ -18,13 +18,8 @@ class Player {
   });
 
   Player copyWith({
-    String? id,
-    String? name,
-    String? characterId,
-    bool? isAlive,
-    bool? isMafia,
-    int? votesReceived,
-    bool? isEliminated,
+    String? id, String? name, String? characterId,
+    bool? isAlive, bool? isMafia, int? votesReceived, bool? isEliminated,
   }) {
     return Player(
       id: id ?? this.id,

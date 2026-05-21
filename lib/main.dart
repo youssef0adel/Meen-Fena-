@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app.dart';
 import 'presentation/providers/game_provider.dart';
 import 'presentation/providers/audio_provider.dart';
