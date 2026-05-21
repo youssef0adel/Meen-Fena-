@@ -3,7 +3,7 @@
     <application
         android:label="مين فينا؟"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@android:drawable/ic_menu_view"
         android:allowBackup="false"
         android:supportsRtl="true"
         android:theme="@style/LaunchTheme"

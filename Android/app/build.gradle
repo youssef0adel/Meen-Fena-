@@ -36,6 +36,11 @@ android {
         disable 'InvalidPackage'
         abortOnError false
     }
+    
+    // ✅ تجاهل أخطاء الموارد المفقودة
+    aaptOptions {
+        ignoreAssetsPattern "!ic_launcher:!ic_launcher_round"
+    }
 }
 
 flutter {
