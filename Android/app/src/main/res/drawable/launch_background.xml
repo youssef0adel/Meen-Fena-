@@ -3,15 +3,8 @@
     <!-- خلفية سوداء -->
     <item android:drawable="@android:color/black" />
     
-    <!-- شعار اللعبة في المنتصف -->
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/ic_launcher" />
-    </item>
-    
-    <!-- شريط أحمر في الأسفل -->
-    <item android:top="90%">
+    <!-- شريط أحمر في الأسفل - استخدم dp بدل % -->
+    <item android:top="800dp">
         <shape android:shape="rectangle">
             <solid android:color="#D32F2F" />
             <size android:height="4dp" />

@@ -13,12 +13,12 @@ dependencies:
     sdk: flutter
     
   provider: ^6.1.1
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.3.4
   flutter_animate: ^4.5.0
   flutter_svg: ^2.0.9
   uuid: ^4.2.1
   collection: ^1.18.0
-  web_socket_channel: ^2.4.0
+  web_socket_channel: ^3.0.1
 
 dev_dependencies:
   flutter_test:
@@ -27,4 +27,3 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
-  
