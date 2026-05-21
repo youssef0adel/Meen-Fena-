@@ -15,6 +15,7 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
   int _playerCount = 4;
   final List<TextEditingController> _nameControllers = [];
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -23,6 +24,9 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
   }
 
   void _initializeControllers() {
+    for (var controller in _nameControllers) {
+      controller.dispose();
+    }
     _nameControllers.clear();
     for (int i = 0; i < _playerCount; i++) {
       _nameControllers.add(TextEditingController());
@@ -39,6 +43,8 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
 
   void _startGame() {
     if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+      
       final playerNames = _nameControllers
           .map((controller) => controller.text.trim())
           .toList();
@@ -48,17 +54,28 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
       gameProvider.selectCase();
       gameProvider.assignRoles();
 
-      Navigator.pushNamed(context, '/role-reveal');
+      // ✅ تأخير بسيط ثم الانتقال
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          Navigator.pushNamed(context, '/role-reveal');
+        }
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
-        title: const Text('Player Setup'),
+        title: const Text(
+          'إعداد اللاعبين',
+          style: TextStyle(color: AppTheme.textPrimary),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -73,32 +90,31 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
           child: Column(
             children: [
               const SizedBox(height: 20),
+              // عدد اللاعبين
               Text(
-                'Enter Player Names',
-                style: Theme.of(context).textTheme.headlineMedium,
+                'اختر عدد اللاعبين',
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 16,
+                ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Minimum 4 players required',
-                style: TextStyle(color: AppTheme.textSecondary),
-              ),
-              const SizedBox(height: 10),
-              // Player count selector
+              const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildPlayerCountButton(4),
-                  const SizedBox(width: 10),
-                  _buildPlayerCountButton(5),
-                  const SizedBox(width: 10),
-                  _buildPlayerCountButton(6),
-                  const SizedBox(width: 10),
-                  _buildPlayerCountButton(7),
-                  const SizedBox(width: 10),
-                  _buildPlayerCountButton(8),
+                  _buildPlayerCountChip(4),
+                  const SizedBox(width: 8),
+                  _buildPlayerCountChip(5),
+                  const SizedBox(width: 8),
+                  _buildPlayerCountChip(6),
+                  const SizedBox(width: 8),
+                  _buildPlayerCountChip(7),
+                  const SizedBox(width: 8),
+                  _buildPlayerCountChip(8),
                 ],
               ),
               const SizedBox(height: 20),
+              // قائمة اللاعبين
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -111,14 +127,37 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
                   },
                 ),
               ),
+              // زر البدء
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: ElevatedButton(
-                  onPressed: _startGame,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 56),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _startGame,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.bloodRed,
+                      foregroundColor: AppTheme.goldAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: AppTheme.goldAccent,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('🔍 ابدأ اللعبة'),
                   ),
-                  child: const Text('START GAME'),
                 ),
               ),
             ],
@@ -128,7 +167,7 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
     );
   }
 
-  Widget _buildPlayerCountButton(int count) {
+  Widget _buildPlayerCountChip(int count) {
     final isSelected = _playerCount == count;
     return GestureDetector(
       onTap: () {
@@ -138,12 +177,13 @@ class _PlayerSetupScreenState extends State<PlayerSetupScreen> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.accentRed : AppTheme.cardDark,
-          borderRadius: BorderRadius.circular(8),
+          color: isSelected ? AppTheme.bloodRed : AppTheme.cardDark,
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected ? AppTheme.goldAccent : Colors.transparent,
+            width: 2,
           ),
         ),
         child: Text(
