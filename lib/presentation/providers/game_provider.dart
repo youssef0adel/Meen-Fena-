@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../game/engine/game_engine.dart';
+import '../../game/engine/jury_system.dart';
 import '../../data/models/player_model.dart';
 import '../../data/models/case_model.dart';
 import '../../data/models/evidence_model.dart';
 
 enum GamePhase {
-  setup,
-  caseSelection,
-  roleDistribution,
-  evidencePhase,
-  discussion,
-  voting,
-  elimination,
-  endgame,
-  juryDeliberation,
+  setup, caseSelection, roleDistribution, evidencePhase,
+  discussion, voting, elimination, endgame, juryDeliberation,
 }
 
 class GameProvider extends ChangeNotifier {
@@ -26,9 +20,10 @@ class GameProvider extends ChangeNotifier {
   Player? _currentPlayer;
   Map<String, String> _votes = {};
   double _suspicionLevel = 0.0;
-  bool _isTransitioning = false; // ✅ منع التكرار
+  JurySystem? _jurySystem;
+  List<Player> _finalSuspects = [];
+  bool _isJuryPhase = false;
 
-  // Getters
   GameEngine? get gameEngine => _gameEngine;
   List<Player> get players => _players;
   GameCase? get currentCase => _currentCase;
@@ -38,10 +33,21 @@ class GameProvider extends ChangeNotifier {
   Player? get currentPlayer => _currentPlayer;
   Map<String, String> get votes => _votes;
   double get suspicionLevel => _suspicionLevel;
-  List<Player> get alivePlayers =>
-      _players.where((p) => p.isAlive).toList();
-  List<Player> get eliminatedPlayers =>
-      _players.where((p) => p.isEliminated).toList();
+  JurySystem? get jurySystem => _jurySystem;
+  bool get isJuryPhase => _isJuryPhase;
+  List<Player> get finalSuspects => _finalSuspects;
+  List<Player> get alivePlayers => _players.where((p) => p.isAlive).toList();
+  // ✅ المحلفين = اللاعبين اللي خرجوا
+  List<Player> get eliminatedPlayersList => _players.where((p) => p.isEliminated).toList();
+
+  // أضف المتغير ده في GameProvider
+  int _discussionTime = 120;
+  int get discussionTime => _discussionTime;
+
+  void setDiscussionTime(int seconds) {
+    _discussionTime = seconds;
+    notifyListeners();
+  }
 
   void initializeGame(List<String> playerNames) {
     _gameEngine = GameEngine.initialize(playerNames);
@@ -49,65 +55,44 @@ class GameProvider extends ChangeNotifier {
     _currentPhase = GamePhase.setup;
     _currentRound = 0;
     _suspicionLevel = 0.0;
-    _isTransitioning = false;
+    _isJuryPhase = false;
+    _finalSuspects = [];
     notifyListeners();
   }
 
   void selectCase() {
     if (_gameEngine == null) return;
     _currentCase = _gameEngine!.selectCase();
-    _currentPhase = GamePhase.caseSelection;
     notifyListeners();
   }
 
   void assignRoles() {
     if (_gameEngine == null) return;
     _players = _gameEngine!.assignRoles();
-    _currentPhase = GamePhase.roleDistribution;
     notifyListeners();
   }
 
   void startEvidencePhase() {
-    if (_isTransitioning) return; // ✅ منع الاستدعاء المتكرر
-    _isTransitioning = true;
-    
+    if (_gameEngine == null) return;
     _currentPhase = GamePhase.evidencePhase;
-    // ✅ تأكد إن evidenceIndex موجود
-    if (_gameEngine != null) {
-      _currentEvidence = _gameEngine!.getCurrentEvidence();
-    }
-    _suspicionLevel = 0.3;
-    
-    _isTransitioning = false;
+    _currentEvidence = _gameEngine!.getEvidenceForRound(_currentRound);
+    _suspicionLevel = 0.3 + (_currentRound * 0.1);
     notifyListeners();
   }
 
-  void nextEvidence() {
-    if (_gameEngine == null || _isTransitioning) return;
-    _isTransitioning = true;
-
-    if (_gameEngine!.nextEvidence()) {
-      _currentEvidence = _gameEngine!.getCurrentEvidence();
-      _suspicionLevel += 0.05;
-    } else {
-      // ✅ خلصت الأدلة - ننتقل للمناقشة
-      _currentPhase = GamePhase.discussion;
-      _suspicionLevel = 0.7;
-    }
-
-    _isTransitioning = false;
+  void goToDiscussion() {
+    _currentPhase = GamePhase.discussion;
+    _suspicionLevel = 0.6;
     notifyListeners();
   }
 
   void startDiscussion() {
-    if (_isTransitioning) return;
     _currentPhase = GamePhase.discussion;
     _suspicionLevel = 0.6;
     notifyListeners();
   }
 
   void startVoting() {
-    if (_isTransitioning) return;
     _currentPhase = GamePhase.voting;
     _votes = {};
     _suspicionLevel = 0.85;
@@ -120,10 +105,8 @@ class GameProvider extends ChangeNotifier {
   }
 
   void processElimination() {
-    if (_gameEngine == null || _isTransitioning) return;
-    _isTransitioning = true;
+    if (_gameEngine == null) return;
 
-    _suspicionLevel = 1.0;
     final eliminatedPlayer = _gameEngine!.processVotes(_votes);
     if (eliminatedPlayer != null) {
       final index = _players.indexWhere((p) => p.id == eliminatedPlayer.id);
@@ -132,34 +115,78 @@ class GameProvider extends ChangeNotifier {
 
     final result = _gameEngine!.checkWinCondition();
     if (result != null) {
-      // ✅ اللعبة انتهت
-      _currentPhase = GamePhase.endgame;
+      if (result == GameResult.juryPhase) {
+        // ✅ تفعيل هيئة المحلفين
+        _startJuryPhase();
+      } else {
+        _currentPhase = GamePhase.endgame;
+      }
     } else {
-      // ✅ اللعبة مستمرة - جولة جديدة
+      // ✅ انتقال للدليل التالي
+      _gameEngine!.advanceToNextEvidence();
       _currentRound++;
       _votes = {};
-      // ✅ إعادة تعيين الأدلة للجولة الجديدة
-      _gameEngine!.evidenceIndex = 0;
-      _currentEvidence = _gameEngine!.getCurrentEvidence();
-      _currentPhase = GamePhase.evidencePhase;
+      _currentEvidence = _gameEngine!.getEvidenceForRound(_currentRound);
+      if (_currentEvidence == null) {
+        _currentPhase = GamePhase.discussion;
+      } else {
+        _currentPhase = GamePhase.evidencePhase;
+      }
       _suspicionLevel = 0.3;
     }
+    notifyListeners();
+  }
 
-    _isTransitioning = false;
+  // ✅ بدء مرحلة المحلفين
+void _startJuryPhase() {
+    _isJuryPhase = true;
+    _currentPhase = GamePhase.juryDeliberation;
+    
+    // ✅ المشتبه بهم = اللاعبين الأحياء (2 لاعبين)
+    _finalSuspects = _players.where((p) => p.isAlive).toList();
+    
+    // ✅ المحلفين = اللاعبين اللي تم إقصاؤهم
+    final jury = _players.where((p) => p.isEliminated).toList();
+    
+    // ✅ لو مفيش محلفين (حالة نادرة)، نخلي اللاعبين الأحياء يصوتوا
+    if (jury.isEmpty) {
+      _finalSuspects = _players.where((p) => p.isAlive).toList();
+      _jurySystem = JurySystem(
+        eliminatedPlayers: _finalSuspects, // يصوتوا على بعض
+        finalSuspects: _finalSuspects,
+      );
+    } else {
+      _jurySystem = JurySystem(
+        eliminatedPlayers: jury,
+        finalSuspects: _finalSuspects,
+      );
+    }
+    
+    _votes = {};
+    notifyListeners();
+  }
+  void castJuryVote(String voterId, String targetId) {
+    _votes[voterId] = targetId;
+    notifyListeners();
+  }
+
+  void processJuryVotes() {
+    if (_jurySystem == null) return;
+    final voteCount = _jurySystem!.conductJuryVote(_votes);
+    final winner = _jurySystem!.determineWinner(voteCount);
+    if (winner != null) {
+      _currentPhase = GamePhase.endgame;
+      _currentPlayer = winner;
+    }
     notifyListeners();
   }
 
   void resetGame() {
-    _gameEngine = null;
-    _players = [];
-    _currentCase = null;
-    _currentPhase = GamePhase.setup;
-    _currentEvidence = null;
-    _currentRound = 0;
-    _currentPlayer = null;
-    _votes = {};
-    _suspicionLevel = 0.0;
-    _isTransitioning = false;
+    _gameEngine = null; _players = []; _currentCase = null;
+    _currentPhase = GamePhase.setup; _currentEvidence = null;
+    _currentRound = 0; _currentPlayer = null; _votes = {};
+    _suspicionLevel = 0.0; _jurySystem = null;
+    _isJuryPhase = false; _finalSuspects = [];
     notifyListeners();
   }
 }
